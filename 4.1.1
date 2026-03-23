@@ -1,0 +1,177 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for Node
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+// Structure for Linked List
+struct LinkedList {
+    struct Node* head;
+    int size;
+};
+
+// Function to display list
+void display(struct LinkedList* list) {
+    printf("Linked List: ");
+    struct Node* temp = list->head;
+
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+// Insert function
+void insert(struct LinkedList* list, int data, int position) {
+
+    if (position < 0 || position > list->size) {
+        printf("Invalid position\n");
+        return;
+    }
+
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+
+    if (position == 0) {
+        newNode->next = list->head;
+        list->head = newNode;
+    } else {
+        struct Node* temp = list->head;
+        for (int i = 0; i < position - 1; i++)
+            temp = temp->next;
+
+        newNode->next = temp->next;
+        temp->next = newNode;
+    }
+
+    list->size++;
+    printf("Element %d inserted at position %d\n", data, position);
+}
+
+// Delete function
+void deleteNode(struct LinkedList* list, int position) {
+
+    if (position < 0 || position >= list->size) {
+        printf("Invalid position\n");
+        return;
+    }
+
+    struct Node* temp = list->head;
+
+    if (position == 0) {
+        list->head = temp->next;
+        free(temp);
+    } else {
+        for (int i = 0; i < position - 1; i++)
+            temp = temp->next;
+
+        struct Node* nodeToDelete = temp->next;
+        temp->next = nodeToDelete->next;
+        free(nodeToDelete);
+    }
+
+    list->size--;
+    printf("Element at position %d deleted\n", position);
+}
+
+// Reverse function (temporary reverse for display only)
+void reverse(struct LinkedList* list) {
+
+    struct Node *prev = NULL, *current = list->head, *next = NULL;
+
+    while (current != NULL) {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
+
+    printf("Reversed List: ");
+    struct Node* temp = prev;
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+
+    // Restore original order
+    current = prev;
+    prev = NULL;
+
+    while (current != NULL) {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
+
+    list->head = prev;
+}
+
+int main() {
+
+    struct LinkedList list;
+    list.head = NULL;
+    list.size = 0;
+
+    int n, value, position, choice;
+
+    printf("Enter the number of elements in the linked list: ");
+    scanf("%d", &n);
+
+    printf("Enter the elements:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &value);
+        insert(&list, value, list.size);
+    }
+
+    while (1) {
+        printf("Linked List Operations:\n");
+        printf("1. Insert\n");
+        printf("2. Delete\n");
+        printf("3. Reverse\n");
+        printf("4. Display\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+
+            case 1:
+                printf("Enter data to insert: ");
+                scanf("%d", &value);
+                printf("Enter position to insert: ");
+                scanf("%d", &position);
+                insert(&list, value, position);
+                break;
+
+            case 2:
+                printf("Enter position to delete: ");
+                scanf("%d", &position);
+                deleteNode(&list, position);
+                break;
+
+            case 3:
+                reverse(&list);
+                break;
+
+            case 4:
+                display(&list);
+                break;
+
+            case 5:
+                printf("Exiting program\n");
+                exit(0);
+
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+
+    return 0;
+}
